@@ -72,39 +72,50 @@ class Start(Screen):
     pass
 
 class Meditation(Screen):
+    time_remaining = NumericProperty(60)
+    circle = ObjectProperty(None)
+    time_label = ObjectProperty(None)
+
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.label = Label(text='10', font_size='114', pos=(0, 10), color = (0.552, 0.843, 0.478, 1),
-                           font_name=r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\font\\ComicNeue-Regular.ttf')
-        self.add_widget(self.label)
+        super(Meditation, self).__init__(**kwargs)
+        self._update_circle()
+        self._update_time_label()
 
-    def on_enter(self, *args):
-        self.counter = 10
-        self.label.text = str(self.counter)
-        self.schedule = Clock.schedule_interval(self.update_timer, 1)
+    def _update_circle(self, *args):
+        if self.circle:
+            self.canvas.remove(self.circle)
+        with self.canvas:
+            Color(0.552, 0.843, 0.478, 1)
+            self.circle = Line(circle=(self.center_x, self.center_y, 100, 0, 360 * (self.time_remaining / 60)), width=2)
 
-    def on_pre_leave(self, *args):
-        self.schedule.cancel()
+    def _update_time_label(self, *args):
+        if self.time_label:
+            self.remove_widget(self.time_label)
+        self.time_label = Label(text=str(int(self.time_remaining)), pos=(self.center_x - 50, self.center_y - 50), font_size=30, color = (0.552, 0.843, 0.478, 1))
+        self.add_widget(self.time_label)
 
-    def update_timer(self, dt):
-        self.counter -= 1
-        self.label.text = str(self.counter)
-        if self.counter == 0:
-            self.manager.current = 'Start'
+    def update(self, dt):
+        if self.time_remaining > 0:
+            self.time_remaining -= dt
+            self._update_circle()
+            self._update_time_label()
+        else:
+            self.time_remaining = 0
 
 class Calendar(Screen):
     pass
 
 screen_manager = ScreenManager()
+timer = Meditation()
 screen_manager.add_widget(Start(name="Start"))
 screen_manager.add_widget(Meditation(name="Meditation"))
 screen_manager.add_widget(Calendar(name="Calendar"))
 
-
 class Bamboo(App):
     def build(self):
         Window.size = (375, 645)
-        return screen_manager
+        Clock.schedule_interval(timer.update, 1.0 / 60.0)
+        return screen_manager and timer
 
 Bamboo_App = Bamboo()
 Bamboo_App.run()
