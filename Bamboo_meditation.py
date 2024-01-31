@@ -5,8 +5,6 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.core.window import Window
 from kivy.clock import Clock
 from kivy.uix.label import Label
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 from kivy.graphics import Color, Line
 from kivy.properties import NumericProperty, ObjectProperty
@@ -39,7 +37,7 @@ Builder.load_string("""
         on_press:
             root.manager.transition.direction = 'left'
             root.manager.transition.duration = 1
-            root.manager.current = 'CountdownTimer'
+            root.manager.current = 'TimerScreen'
              
     Button:
         background_normal: r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\Images\\calendar_green_1_small.png'
@@ -53,7 +51,7 @@ Builder.load_string("""
             root.manager.transition.duration = 1
             root.manager.current = 'Calendar'
              
-<Meditation>:    
+<TimerScreen>:    
     canvas:
         Color:
             rgba: 255, 255, 255, 255
@@ -71,8 +69,8 @@ Builder.load_string("""
 class Start(Screen):
     pass
 
-class CountdownTimer(Screen, Widget):
-    time_remaining = NumericProperty(60)
+class CountdownTimer(Widget):
+    time_remaining = NumericProperty(60)    # Таймер стартует сразу же после запуска программы!!! А должен после перехода на экран таймера!!!
     circle = ObjectProperty(None)
     time_label = ObjectProperty(None)
 
@@ -86,12 +84,14 @@ class CountdownTimer(Screen, Widget):
             self.canvas.remove(self.circle)
         with self.canvas:
             Color(0.552, 0.843, 0.478, 1)
-            self.circle = Line(circle=(self.center_x, self.center_y, 100, 0, 360 * (self.time_remaining / 60)), width=2)
+            self.circle = Line(circle=(self.center_x, self.center_y+10, 100, 0, 360 * (self.time_remaining / 60)), width=2)
 
     def _update_time_label(self, *args):
         if self.time_label:
             self.remove_widget(self.time_label)
-        self.time_label = Label(text=str(int(self.time_remaining)), pos=(self.center_x - 50, self.center_y - 50), font_size=30, color = (0.552, 0.843, 0.478, 1))
+        self.time_label = Label(text=str(int(self.time_remaining)), pos=(self.center_x-50, self.center_y-40),
+                                font_size=124, font_name=r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\font\\ComicNeue-Regular.ttf',
+                                color = (0.552, 0.843, 0.478, 1))
         self.add_widget(self.time_label)
 
     def update(self, dt):
@@ -102,12 +102,19 @@ class CountdownTimer(Screen, Widget):
         else:
             self.time_remaining = 0
 
+class TimerScreen(Screen):
+    def __init__(self, **kwargs):
+        super(TimerScreen, self).__init__(**kwargs)
+        timer = CountdownTimer()
+        Clock.schedule_interval(timer.update, 1.0 / 60.0)
+        self.add_widget(timer)
+
 class Calendar(Screen):
     pass
 
 screen_manager = ScreenManager()
 screen_manager.add_widget(Start(name="Start"))
-screen_manager.add_widget(CountdownTimer(name="CountdownTimer"))
+screen_manager.add_widget(TimerScreen(name="TimerScreen"))
 screen_manager.add_widget(Calendar(name="Calendar"))
 
 class Bamboo(App):
@@ -115,9 +122,7 @@ class Bamboo(App):
         Window.size = (375, 645)
         return screen_manager
     def build_T(self):
-        timer = CountdownTimer()
-        Clock.schedule_interval(timer.update, 1.0 / 60.0)
-        return timer
+        return TimerScreen()
 
 Bamboo_App = Bamboo()
 Bamboo_App.run()
