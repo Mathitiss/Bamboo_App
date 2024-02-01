@@ -70,7 +70,7 @@ class Start(Screen):
     pass
 
 class CountdownTimer(Widget):
-    time_remaining = NumericProperty(60)    # Таймер стартует сразу же после запуска программы!!! А должен после перехода на экран таймера!!!
+    time_remaining = NumericProperty(60)
     circle = ObjectProperty(None)
     time_label = ObjectProperty(None)
 
@@ -84,7 +84,7 @@ class CountdownTimer(Widget):
             self.canvas.remove(self.circle)
         with self.canvas:
             Color(0.552, 0.843, 0.478, 1)
-            self.circle = Line(circle=(self.center_x, self.center_y+10, 100, 0, 360 * (self.time_remaining / 60)), width=2)
+            self.circle = Line(circle=(self.center_x, self.center_y+10, 150, 0, 360 * (self.time_remaining / 60)), width=3)
 
     def _update_time_label(self, *args):
         if self.time_label:
@@ -105,9 +105,19 @@ class CountdownTimer(Widget):
 class TimerScreen(Screen):
     def __init__(self, **kwargs):
         super(TimerScreen, self).__init__(**kwargs)
-        timer = CountdownTimer()
-        Clock.schedule_interval(timer.update, 1.0 / 60.0)
-        self.add_widget(timer)
+        self.timer = None
+
+    def on_enter(self, *args):
+        if not self.timer:
+            self.timer = CountdownTimer()
+            Clock.schedule_interval(self.timer.update, 1.0 / 60.0)
+            self.add_widget(self.timer)
+
+    def on_leave(self, *args):
+        if self.timer:
+            Clock.unschedule(self.timer.update)
+            self.remove_widget(self.timer)
+            self.timer = None
 
 class Calendar(Screen):
     pass
