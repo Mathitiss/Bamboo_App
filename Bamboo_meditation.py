@@ -102,7 +102,7 @@ class CountdownTimer(Widget):
         else:
             self.time_remaining = 0
 
-class TimerScreen(Screen):
+class TimerScreen(Screen):          # Изменить резкое появление часов из левого нижнего угла !!!
     def __init__(self, **kwargs):
         super(TimerScreen, self).__init__(**kwargs)
         self.timer = None
