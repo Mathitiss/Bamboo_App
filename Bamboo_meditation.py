@@ -50,6 +50,18 @@ Builder.load_string("""
             root.manager.transition.direction = 'down'
             root.manager.transition.duration = 1
             root.manager.current = 'Calendar'
+            
+    Button:
+        background_normal: r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\Images\\Clock_small.png'
+        background_down: r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\Images\\Clock_small.png'
+        size_hint: None, None
+        size: 35, 56
+        x: 315
+        y: 15
+        on_press:
+            root.manager.transition.direction = 'up'
+            root.manager.transition.duration = 0
+            root.manager.current = 'TimeSet'
              
 <TimerScreen>:    
     canvas:
@@ -64,6 +76,14 @@ Builder.load_string("""
             rgba: 255, 255, 255, 255
         Rectangle:
             size: self.size
+            
+<TimeSet>:
+    canvas:
+        Color:
+            rgba: 255, 255, 255, 255
+        Rectangle:
+            size: self.size
+            
 """)
 
 class Start(Screen):
@@ -122,10 +142,14 @@ class TimerScreen(Screen):          # Изменить резкое появле
 class Calendar(Screen):
     pass
 
+class TimeSet(Screen):
+    pass
+
 screen_manager = ScreenManager()
 screen_manager.add_widget(Start(name="Start"))
 screen_manager.add_widget(TimerScreen(name="TimerScreen"))
 screen_manager.add_widget(Calendar(name="Calendar"))
+screen_manager.add_widget(TimeSet(name="TimeSet"))
 
 class Bamboo(App):
     def build(self):
