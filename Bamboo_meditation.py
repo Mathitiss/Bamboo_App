@@ -68,8 +68,24 @@ Builder.load_string("""
         Color:
             rgba: 255, 255, 255, 255
         Rectangle:
-            size: self.size     
-             
+            size: self.size
+            
+    Label:
+        Image:
+            source: r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\Images\\bamboo_green_2.png'
+            size_hint: None, None
+            size: 400, 400
+            x: 150
+            y: 450
+            
+    Label:
+        Image:
+            source: r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\Images\\bamboo_green_2.png'
+            size_hint: None, None
+            size: 400, 400
+            x: -220
+            y: -210
+                         
 <Calendar>:
     canvas:
         Color:
