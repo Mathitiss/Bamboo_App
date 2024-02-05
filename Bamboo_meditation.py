@@ -37,7 +37,7 @@ Builder.load_string("""
         on_press:
             root.manager.transition.direction = 'left'
             root.manager.transition.duration = 1
-            root.manager.current = 'TimerScreen'
+            root.manager.current = 'MeditationScreen'
              
     Button:
         background_normal: r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\Images\\calendar_green_1_small.png'
@@ -63,7 +63,7 @@ Builder.load_string("""
             root.manager.transition.duration = 0
             root.manager.current = 'TimeSet'
              
-<TimerScreen>:    
+<MeditationScreen>:    
     canvas:
         Color:
             rgba: 255, 255, 255, 255
@@ -85,7 +85,19 @@ Builder.load_string("""
             size: 400, 400
             x: -220
             y: -210
-                         
+
+    Button:
+        background_normal: r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\Images\\SURRENDER_button.png'
+        background_down: r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\Images\\SURRENDER_button.png'
+        size_hint: None, None
+        size: 175, 23
+        center_x: root.width / 2
+        y: 120
+        on_press:
+            root.manager.transition.direction = 'up'
+            root.manager.transition.duration = 0
+            root.manager.current = 'Start'
+                                     
 <Calendar>:
     canvas:
         Color:
@@ -138,9 +150,9 @@ class CountdownTimer(Widget):
         else:
             self.time_remaining = 0
 
-class TimerScreen(Screen):          # Изменить резкое появление часов из левого нижнего угла !!!
+class MeditationScreen(Screen):
     def __init__(self, **kwargs):
-        super(TimerScreen, self).__init__(**kwargs)
+        super(MeditationScreen, self).__init__(**kwargs)
         self.timer = None
 
     def on_enter(self, *args):
@@ -163,7 +175,7 @@ class TimeSet(Screen):
 
 screen_manager = ScreenManager()
 screen_manager.add_widget(Start(name="Start"))
-screen_manager.add_widget(TimerScreen(name="TimerScreen"))
+screen_manager.add_widget(MeditationScreen(name="MeditationScreen"))
 screen_manager.add_widget(Calendar(name="Calendar"))
 screen_manager.add_widget(TimeSet(name="TimeSet"))
 
@@ -172,7 +184,17 @@ class Bamboo(App):
         Window.size = (375, 645)
         return screen_manager
     def build_T(self):
-        return TimerScreen()
+        return MeditationScreen()
 
 Bamboo_App = Bamboo()
 Bamboo_App.run()
+
+'''
+- TODO:
+1. Button "Surrender" in meditation screen, on press create a notification with 2 buttons, first
+button "Confirm" take back to start screen and reset a timer, second button "Cancel" close notification.
+2. After timer is out, automatically change back to start screen. And create text notification
+"Congratulation" for 5 sec long.
+3. Create a new screen for time setting.
+4. Create a new screen for meditation days counting.
+'''
