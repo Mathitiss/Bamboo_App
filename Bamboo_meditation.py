@@ -8,6 +8,10 @@ from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 from kivy.graphics import Color, Line
 from kivy.properties import NumericProperty, ObjectProperty
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.button import Button
+from kivy.uix.popup import Popup
+from kivy.uix.floatlayout import FloatLayout
 
 kivy.require('1.9.0')
 
@@ -85,18 +89,6 @@ Builder.load_string("""
             size: 400, 400
             x: -220
             y: -210
-
-    Button:
-        background_normal: r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\Images\\SURRENDER_button.png'
-        background_down: r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\Images\\SURRENDER_button.png'
-        size_hint: None, None
-        size: 175, 23
-        center_x: root.width / 2
-        y: 120
-        on_press:
-            root.manager.transition.direction = 'up'
-            root.manager.transition.duration = 0
-            root.manager.current = 'Start'
                                      
 <Calendar>:
     canvas:
@@ -127,6 +119,21 @@ class CountdownTimer(Widget):
         self._update_circle()
         self._update_time_label()
 
+        layout = FloatLayout()
+        button = Button(
+            text='SURRENDER',
+            font_size = 32,
+            size_hint=(None, None),
+            size=(200, 60),
+            pos=(self.center_x+40, self.center_y+50),
+            color = (0.552, 0.843, 0.478, 1),
+            background_color = (0, 0, 0, 0),
+            font_name = r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\font\\ComicNeue-Regular.ttf'
+        )
+        layout.add_widget(button)
+        button.bind(on_release=self.notification)
+        self.add_widget(layout)
+
     def _update_circle(self, *args):
         if self.circle:
             self.canvas.remove(self.circle)
@@ -138,9 +145,24 @@ class CountdownTimer(Widget):
         if self.time_label:
             self.remove_widget(self.time_label)
         self.time_label = Label(text=str(int(self.time_remaining)), pos=(self.center_x-50, self.center_y-40),
-                                font_size=124, font_name=r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\font\\ComicNeue-Regular.ttf',
+                                font_size=124, font_name=r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\font\\ComicNeue-Bold.ttf',
                                 color = (0.552, 0.843, 0.478, 1))
         self.add_widget(self.time_label)
+
+    def notification(self, button):
+        layout = GridLayout(cols=1, padding=10)
+        popup_label = Label(text='Are you sure you want to give up?')
+        finish_button = Button(text='Yes... Give up', background_color=(0.552, 0.843, 0.478, 1))
+        close_button = Button(text='No! Continue', background_color=(0.552, 0.843, 0.478, 1))
+
+        layout.add_widget(popup_label)
+        layout.add_widget(finish_button)
+        layout.add_widget(close_button)
+
+        popup = Popup(title='SURRENDER!?', content=layout, size_hint=(None, None), size=(300, 200))
+        finish_button.bind(on_release=popup.dismiss)
+        close_button.bind(on_release=popup.dismiss)
+        popup.open()
 
     def update(self, dt):
         if self.time_remaining > 0:
