@@ -1,7 +1,7 @@
 import kivy
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from kivy.core.window import Window
 from kivy.clock import Clock
 from kivy.uix.label import Label
@@ -114,8 +114,9 @@ class CountdownTimer(Widget):
     circle = ObjectProperty(None)
     time_label = ObjectProperty(None)
 
-    def __init__(self, **kwargs):
+    def __init__(self, manager, **kwargs):
         super(CountdownTimer, self).__init__(**kwargs)
+        self.manager = manager
         self._update_circle()
         self._update_time_label()
 
@@ -160,7 +161,7 @@ class CountdownTimer(Widget):
         layout.add_widget(close_button)
 
         popup = Popup(title='SURRENDER!?', content=layout, size_hint=(None, None), size=(300, 200))
-        finish_button.bind(on_release=popup.dismiss)
+        finish_button.bind(on_press=self.go_to_second_screen, on_release=popup.dismiss)
         close_button.bind(on_release=popup.dismiss)
         popup.open()
 
@@ -172,6 +173,10 @@ class CountdownTimer(Widget):
         else:
             self.time_remaining = 0
 
+    def go_to_second_screen(self, *args):
+        screen_manager.transition = SlideTransition(direction='right', duration= 1)
+        screen_manager.current = 'Start'
+
 class MeditationScreen(Screen):
     def __init__(self, **kwargs):
         super(MeditationScreen, self).__init__(**kwargs)
@@ -179,7 +184,7 @@ class MeditationScreen(Screen):
 
     def on_enter(self, *args):
         if not self.timer:
-            self.timer = CountdownTimer()
+            self.timer = CountdownTimer(self)
             Clock.schedule_interval(self.timer.update, 1.0 / 60.0)
             self.add_widget(self.timer)
 
@@ -204,6 +209,7 @@ screen_manager.add_widget(TimeSet(name="TimeSet"))
 class Bamboo(App):
     def build(self):
         Window.size = (375, 645)
+        screen_manager.current = 'Start'
         return screen_manager
     def build_T(self):
         return MeditationScreen()
@@ -213,10 +219,8 @@ Bamboo_App.run()
 
 '''
 - TODO:
-1. Button "Surrender" in meditation screen, on press create a notification with 2 buttons, first
-button "Confirm" take back to start screen and reset a timer, second button "Cancel" close notification.
-2. After timer is out, automatically change back to start screen. And create text notification
+1. After timer is out, automatically change back to start screen. And create text notification
 "Congratulation" for 5 sec long.
-3. Create a new screen for time setting.
-4. Create a new screen for meditation days counting.
+2. Create a new screen for time setting.
+3. Create a new screen for meditation days counting.
 '''
