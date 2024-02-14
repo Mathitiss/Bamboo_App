@@ -110,7 +110,7 @@ class Start(Screen):
     pass
 
 class CountdownTimer(Widget):
-    time_remaining = NumericProperty(60)
+    time_remaining = NumericProperty(10)
     circle = ObjectProperty(None)
     time_label = ObjectProperty(None)
 
@@ -123,13 +123,13 @@ class CountdownTimer(Widget):
         layout = FloatLayout()
         button = Button(
             text='SURRENDER',
-            font_size = 32,
+            font_size=32,
             size_hint=(None, None),
             size=(200, 60),
             pos=(self.center_x+40, self.center_y+50),
-            color = (0.552, 0.843, 0.478, 1),
-            background_color = (0, 0, 0, 0),
-            font_name = r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\font\\ComicNeue-Regular.ttf'
+            color=(0.552, 0.843, 0.478, 1),
+            background_color=(0, 0, 0, 0),
+            font_name=r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\font\\ComicNeue-Regular.ttf'
         )
         layout.add_widget(button)
         button.bind(on_release=self.notification)
@@ -140,7 +140,7 @@ class CountdownTimer(Widget):
             self.canvas.remove(self.circle)
         with self.canvas:
             Color(0.552, 0.843, 0.478, 1)
-            self.circle = Line(circle=(self.center_x, self.center_y+10, 150, 0, 360 * (self.time_remaining / 60)), width=3)
+            self.circle = Line(circle=(self.center_x, self.center_y+10, 150, 0, 360 * (self.time_remaining / 10)), width=3)
 
     def _update_time_label(self, *args):
         if self.time_label:
@@ -165,6 +165,20 @@ class CountdownTimer(Widget):
         close_button.bind(on_release=popup.dismiss)
         popup.open()
 
+    '''                                             # MAYBE IN FUTURE UPDATES
+    def timeout_notif(self, button):
+        layout = GridLayout(cols=1, padding=10)
+        popup_label_ok = Label(text='Congratulation')
+        ok_button = Button(text='OK', background_color=(0.552, 0.843, 0.478, 1))
+
+        layout.add_widget(popup_label_ok)
+        layout.add_widget(ok_button)
+
+        popup_ok = Popup(title='You did it!', content=layout, size_hint=(None, None), size=(300, 200))
+        ok_button.bind(on_press=self.go_to_second_screen, on_release=popup_ok.dismiss)
+        popup_ok.open()
+    '''
+
     def update(self, dt):
         if self.time_remaining > 0:
             self.time_remaining -= dt
@@ -172,9 +186,10 @@ class CountdownTimer(Widget):
             self._update_time_label()
         else:
             self.time_remaining = 0
+            self.go_to_second_screen()
 
     def go_to_second_screen(self, *args):
-        screen_manager.transition = SlideTransition(direction='right', duration= 1)
+        screen_manager.transition = SlideTransition(direction='right', duration=1)
         screen_manager.current = 'Start'
 
 class MeditationScreen(Screen):
@@ -200,7 +215,7 @@ class Calendar(Screen):
 class TimeSet(Screen):
     pass
 
-screen_manager = ScreenManager()
+screen_manager=ScreenManager()
 screen_manager.add_widget(Start(name="Start"))
 screen_manager.add_widget(MeditationScreen(name="MeditationScreen"))
 screen_manager.add_widget(Calendar(name="Calendar"))
@@ -214,13 +229,11 @@ class Bamboo(App):
     def build_T(self):
         return MeditationScreen()
 
-Bamboo_App = Bamboo()
+Bamboo_App=Bamboo()
 Bamboo_App.run()
 
 '''
 - TODO:
-1. After timer is out, automatically change back to start screen. And create text notification
-"Congratulation" for 5 sec long.
-2. Create a new screen for time setting.
-3. Create a new screen for meditation days counting.
+1. Create a new screen for time setting.
+2. Create a new screen for meditation days counting.
 '''
