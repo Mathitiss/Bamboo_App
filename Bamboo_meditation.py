@@ -54,19 +54,7 @@ Builder.load_string("""
             root.manager.transition.direction = 'down'
             root.manager.transition.duration = 1
             root.manager.current = 'Calendar'
-            
-    Button:
-        background_normal: r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\Images\\Clock_small.png'
-        background_down: r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\Images\\Clock_small.png'
-        size_hint: None, None
-        size: 35, 56
-        x: 315
-        y: 15
-        on_press:
-            root.manager.transition.direction = 'up'
-            root.manager.transition.duration = 0
-            root.manager.current = 'TimeSet'
-             
+       
 <MeditationScreen>:    
     canvas:
         Color:
@@ -103,11 +91,36 @@ Builder.load_string("""
             rgba: 255, 255, 255, 255
         Rectangle:
             size: self.size
-            
 """)
 
+class ImageButton(Button):
+    def __init__(self, **kwargs):
+        super(ImageButton, self).__init__(**kwargs)
+        self.size_hint = (None, None)
+        self.size = (35, 56)
+        self.x = 315
+        self.y = 15
+        self.background_normal = 'Images/Clock_small.png'
+        self.background_down = 'Images/Clock_small.png'
+
 class Start(Screen):
-    pass
+    def __init__(self, **kwargs):
+        super(Start, self).__init__(**kwargs)
+        layout = FloatLayout()
+        button = ImageButton()
+        button.bind(on_release=self.notific)
+        layout.add_widget(button)
+        self.add_widget(layout)
+
+    def notific(self, instance):
+        grid_layout = GridLayout(cols=1, padding=10)
+        for time in ['10:00', '15:00', '20:00', '25:00', '30:00']:
+            time_button = Button(text=time, background_color=(0.552, 0.843, 0.478, 1))
+            time_button.bind(on_release=lambda btn: popup.dismiss())
+            grid_layout.add_widget(time_button)
+
+        popup = Popup(title='Set Your Time', content=grid_layout, size_hint=(None, None), size=(300, 300))
+        popup.open()
 
 class CountdownTimer(Widget):
     time_remaining = NumericProperty(10)
@@ -212,14 +225,10 @@ class MeditationScreen(Screen):
 class Calendar(Screen):
     pass
 
-class TimeSet(Screen):
-    pass
-
 screen_manager=ScreenManager()
 screen_manager.add_widget(Start(name="Start"))
 screen_manager.add_widget(MeditationScreen(name="MeditationScreen"))
 screen_manager.add_widget(Calendar(name="Calendar"))
-screen_manager.add_widget(TimeSet(name="TimeSet"))
 
 class Bamboo(App):
     def build(self):
@@ -234,6 +243,6 @@ Bamboo_App.run()
 
 '''
 - TODO:
-1. Create a new screen for time setting.
+1. Create a new screen or notification for time setting.  10, 15, 20, 25, 30 (min)
 2. Create a new screen for meditation days counting.
 '''
