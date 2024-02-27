@@ -84,13 +84,6 @@ Builder.load_string("""
             rgba: 255, 255, 255, 255
         Rectangle:
             size: self.size
-            
-<TimeSet>:
-    canvas:
-        Color:
-            rgba: 255, 255, 255, 255
-        Rectangle:
-            size: self.size
 """)
 
 class ImageButton(Button):
@@ -123,7 +116,7 @@ class Start(Screen):
         popup.open()
 
 class CountdownTimer(Widget):
-    time_remaining = NumericProperty(10)
+    time_remaining = NumericProperty(600)
     circle = ObjectProperty(None)
     time_label = ObjectProperty(None)
 
@@ -153,13 +146,13 @@ class CountdownTimer(Widget):
             self.canvas.remove(self.circle)
         with self.canvas:
             Color(0.552, 0.843, 0.478, 1)
-            self.circle = Line(circle=(self.center_x, self.center_y+10, 150, 0, 360 * (self.time_remaining / 10)), width=3)
+            self.circle = Line(circle=(self.center_x+140, self.center_y+300, 150, 0, 360 * (self.time_remaining / 10)), width=3)
 
     def _update_time_label(self, *args):
         if self.time_label:
             self.remove_widget(self.time_label)
-        self.time_label = Label(text=str(int(self.time_remaining)), pos=(self.center_x-50, self.center_y-40),
-                                font_size=124, font_name=r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\font\\ComicNeue-Bold.ttf',
+        self.time_label = Label(text=str(int(self.time_remaining)), pos=(self.center_x+90, self.center_y+250),
+                                font_size=100, font_name=r'C:\\Users\\egorm\\PycharmProjects\\Bamboo\\font\\ComicNeue-Bold.ttf',
                                 color = (0.552, 0.843, 0.478, 1))
         self.add_widget(self.time_label)
 
@@ -194,9 +187,10 @@ class CountdownTimer(Widget):
 
     def update(self, dt):
         if self.time_remaining > 0:
-            self.time_remaining -= dt
-            self._update_circle()
-            self._update_time_label()
+            self.time_remaining -= 1
+            minutes = self.time_remaining // 60
+            seconds = self.time_remaining % 60
+            self.time_label.text = f'{minutes:02d}:{seconds:02d}'
         else:
             self.time_remaining = 0
             self.go_to_second_screen()
@@ -213,7 +207,7 @@ class MeditationScreen(Screen):
     def on_enter(self, *args):
         if not self.timer:
             self.timer = CountdownTimer(self)
-            Clock.schedule_interval(self.timer.update, 1.0 / 60.0)
+            Clock.schedule_interval(self.timer.update, 1.0)
             self.add_widget(self.timer)
 
     def on_leave(self, *args):
